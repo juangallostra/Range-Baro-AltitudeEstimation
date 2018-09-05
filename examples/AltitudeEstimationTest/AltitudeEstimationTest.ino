@@ -8,6 +8,7 @@
 // Assuming the IMU is an MPU9250 and thr baro a MS5637
 #include <MPU9250_Passthru.h>
 #include <MS5637.h>
+#include <VL53L1X.h>
 
 #include "estimator.h"
 
@@ -56,6 +57,11 @@ static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
     } // if gotNewData
 }
 
+// Barometer
+static MS5637 barometer;
+// RangeFinder
+static VL53L1X distanceSensor;
+
 // Altitude estimator
 static cp::AltitudeEstimator altitude;
 
@@ -66,8 +72,15 @@ void setup(void)
     Wire.setClock(400000); // I2C frequency at 400 kHz
     delay(1000);
 
-    // initialize the MPU9250
+    // initialize sensors
     imu.begin();
+    barometer.begin();
+    if (distanceSensor.begin() == false) {
+        while (true) {
+            Serial.println("Sensor offline!");
+            delay(200);
+        }
+    }
     // initialize the estimator
     altitude.init(); 
     
@@ -81,5 +94,16 @@ void setup(void)
 
 void loop(void)
 {
-
+      float pressure;
+      barometer.getPressure(& pressure);
+      float rangeHeight = (float)distanceSensor.getDistance() / 1000.0f;
+      float accelData[3];
+      float gyroData[3];
+      getGyrometerAndAccelerometer(gyroData, accelData);
+      altitude.estimate(accelData, gyroData, rangeHeight, pressure);
+      Serial.print(altitude.range.getAltitude());
+      Serial.print(",");
+      Serial.print(altitude.baro.getAltitude());
+      Serial.print(",");
+      Serial.println(altitude.getAltitude());
 }

@@ -6,6 +6,8 @@ namespace cp {
   class Barometer {
 
       private:
+          
+          float iters;
 
           const float NOISE_LPF             = 0.5f;
           static const uint8_t HISTORY_SIZE = 48;
@@ -27,7 +29,7 @@ namespace cp {
 
           void calibrate(void);
 
-          void update(float pressure);
+          bool update(float pressure);
 
           float getAltitude(void);
         

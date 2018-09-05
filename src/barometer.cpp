@@ -14,6 +14,8 @@ namespace cp {
 
   void Barometer::init(void)
   {
+      iters = 0;
+    
       pressureSum = 0;
       historyIdx = 0;
       groundAltitude = 0;
@@ -27,25 +29,36 @@ namespace cp {
 
   void Barometer::calibrate(void)
   {
-      static float   groundPressure;
+      static float groundPressure;
 
       groundPressure -= groundPressure / 8;
       groundPressure += pressureSum / (HISTORY_SIZE - 1);
       groundAltitude = millibarsToMeters(groundPressure/8);
   }
 
-  void Barometer::update(float pressure)
+  bool Barometer::update(float pressure)
   {
+      bool calibrating = true;
       // update pressure history
       uint8_t indexplus1 = (historyIdx + 1) % HISTORY_SIZE;
       history[historyIdx] = pressure;
       pressureSum += history[historyIdx];
       pressureSum -= history[indexplus1];
       historyIdx = indexplus1;
+      // if required, calibrate baro
+      if (iters < 200)
+      {
+        Barometer::calibrate();
+        iters += 1;
+      }
+      else {
+        calibrating = false;
+      }
       // update altitude estimation
       previousAlt = alt;
       float alt_tmp = millibarsToMeters(pressureSum/(HISTORY_SIZE-1)) - groundAltitude;
       alt = alt*NOISE_LPF + (1-NOISE_LPF)*alt_tmp;
+      return calibrating;
   }
 
   float Barometer::getAltitude(void)
