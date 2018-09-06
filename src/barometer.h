@@ -7,19 +7,19 @@ namespace cp {
 
       private:
           
-          float iters;
+          float _iters;
 
           const float NOISE_LPF                 = 0.5f;
           static const uint8_t HISTORY_SIZE     = 10;
-          static const uint8_t calibrationIters = 100;
+          static const uint8_t _calibrationIters = 100;
 
-          float   alt;
+          float   _alt;
         
-          float   history[HISTORY_SIZE];
-          uint8_t historyIdx;
-          float   groundAltitude;
-          float   previousAlt;
-          float   pressureSum;
+          float   _history[HISTORY_SIZE];
+          uint8_t _historyIdx;
+          float   _groundAltitude;
+          float   _previousAlt;
+          float   _pressureSum;
 
           // Pressure in millibars to altitude in meters
           float millibarsToMeters(float mbar);
