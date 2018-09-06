@@ -1,7 +1,7 @@
 
 #include <cmath>
 
-#include "MadgwickAHRS.h"
+#include "quaternion.h"
 #include "rangefinder.h"
 
 namespace cp {
@@ -19,9 +19,18 @@ namespace cp {
   float Rangefinder::altitudeCompensation(float accel[3], float gyro[3], float altitude)
   {
       // Compensate for effect of pitch, roll on rangefinder reading
-      float q[4]; 
-      MadgwickAHRSupdateIMU(q, gyro[0], gyro[1], gyro[2], accel[0], accel[1], accel[2]);
-  
+      float q[4];
+      // Run the quaternion on the IMU values
+      // Set integration time by time elapsed since last filter update
+      uint32_t time = micros();
+      float deltat = (time - _time) / 1.e6f;
+      _time = time;
+      _quaternionFilter.update(accel[0], accel[1], accel[2], gyro[0], gyro[1], gyro[2], deltat);
+      // get quaternion updated values back
+      q[0] = _quaternionFilter.q1;
+      q[1] = _quaternionFilter.q2;
+      q[2] = _quaternionFilter.q3;
+      q[3] = _quaternionFilter.q4;
       float euler0 = atan2(2.0f*(q[0]*q[1]+q[2]*q[3]),q[0]*q[0]-q[1]*q[1]-q[2]*q[2]+q[3]*q[3]);
       float euler1 = asin(2.0f*(q[1]*q[3]-q[0]*q[2]));
   
