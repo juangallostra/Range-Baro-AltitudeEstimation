@@ -46,7 +46,7 @@ namespace cp {
       pressureSum -= history[indexplus1];
       historyIdx = indexplus1;
       // if required, calibrate baro
-      if (iters < 200)
+      if (iters < calibrationIters)
       {
         Barometer::calibrate();
         iters += 1;

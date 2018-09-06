@@ -9,8 +9,9 @@ namespace cp {
           
           float iters;
 
-          const float NOISE_LPF             = 0.5f;
-          static const uint8_t HISTORY_SIZE = 48;
+          const float NOISE_LPF                 = 0.5f;
+          static const uint8_t HISTORY_SIZE     = 10;
+          static const uint8_t calibrationIters = 100;
 
           float   alt;
         
