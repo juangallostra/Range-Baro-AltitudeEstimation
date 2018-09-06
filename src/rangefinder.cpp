@@ -10,6 +10,10 @@ namespace cp {
   {
       alt = 0;
       previousAlt = 0;
+      // Apply Zero-height update
+      for (uint8_t k = 0; k < ZH_SIZE; ++k) {
+          ZH[k] = 0;
+      }
   }
 
   float Rangefinder::altitudeCompensation(float accel[3], float gyro[3], float altitude)
@@ -21,7 +25,22 @@ namespace cp {
       float euler0 = atan2(2.0f*(q[0]*q[1]+q[2]*q[3]),q[0]*q[0]-q[1]*q[1]-q[2]*q[2]+q[3]*q[3]);
       float euler1 = asin(2.0f*(q[1]*q[3]-q[0]*q[2]));
   
-      return  altitude * cos(euler0) * cos(euler1);
+      float compensatedAltitude = altitude * cos(euler0) * cos(euler1);
+      return ZHUpdate(compensatedAltitude);
+  }
+
+  float Rangefinder::ZHUpdate(float compensatedAltitude)
+  {
+      // first update ZH array with latest estimation
+      ZH[ZHIdx] = compensatedAltitude;
+      // and move index to next slot
+      uint8_t nextIndex = (ZHIdx + 1) % ZH_SIZE;
+      ZHIdx = nextIndex;
+      // Apply Zero-height update
+      for (uint8_t k = 0; k < ZH_SIZE; ++k) {
+          if (fabs(ZH[k]) > heightThreshold) return compensatedAltitude;
+      }
+      return 0.0;
   }
 
   void Rangefinder::update(float accel[3], float gyro[3], float altitude)
