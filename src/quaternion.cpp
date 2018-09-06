@@ -47,12 +47,12 @@ namespace cp {
       _zeta = zeta;
   }
 
-            // Adapted from https://github.com/kriswiner/MPU6050/blob/master/quaternionFilter.ino
+  // Adapted from https://github.com/kriswiner/MPU6050/blob/master/quaternionFilter.ino
   void MadgwickQuaternionFilter6DOF::update(float ax, float ay, float az,
                                             float gx, float gy, float gz,
                                             float deltat)
   {
-      static float gbiasx, gbiasy, gbiasz;        // gyro bias error
+      static float gbiasx, gbiasy, gbiasz; // gyro bias error
 
       // Auxiliary variables to avoid repeated arithmetic
       float _halfq1 = 0.5f * q1;

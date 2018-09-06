@@ -26,11 +26,11 @@ namespace cp {
 
       private:
           
-          float _iters;
+          uint8_t _iters;
+          uint8_t _calibrationIters             = 100;
 
           const float NOISE_LPF                 = 0.5f;
           static const uint8_t HISTORY_SIZE     = 10;
-          static const uint8_t _calibrationIters = 100;
 
           float   _alt;
         
