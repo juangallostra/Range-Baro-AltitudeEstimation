@@ -27,10 +27,10 @@ namespace cp {
       estimatedAltitude = 0;
     }
     range.update(accel, gyro, rangeData);
-    // obtain the deltas
+    // obtain the altitude deltas
     float baroDelta = baro.getDeltaAltitude();
     float rangeDelta = range.getDeltaAltitude();
-    // Combine them
+    // Combine them with a complementary filter
     float alpha = exp(-fabs(baroDelta - rangeDelta)*gain);
     estimatedAltitude += alpha * rangeDelta;
     estimatedAltitude += (1 - alpha) * baroDelta; 
