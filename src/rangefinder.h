@@ -8,14 +8,14 @@ namespace cp {
   
     private:
   
-      float alt = 0;
-      float previousAlt = 0;
+      float _alt = 0;
+      float _previousAlt = 0;
       
       // Zero Height update
       static const uint8_t ZH_SIZE = 10;
-      float ZH[ZH_SIZE];
-      uint8_t ZHIdx = 0;
-      float heightThreshold = 0.04f;
+      float _ZH[ZH_SIZE];
+      uint8_t _ZHIdx = 0;
+      float _heightThreshold = 0.04f;
       
       // Global constants for 6 DoF quaternion filter
       const float GYRO_MEAS_ERROR = M_PI * (40.0f / 180.0f);

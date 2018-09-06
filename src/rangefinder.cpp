@@ -8,11 +8,11 @@ namespace cp {
 
   void Rangefinder::init(void)
   {
-      alt = 0;
-      previousAlt = 0;
+      _alt = 0;
+      _previousAlt = 0;
       // Apply Zero-height update
       for (uint8_t k = 0; k < ZH_SIZE; ++k) {
-          ZH[k] = 0;
+          _ZH[k] = 0;
       }
   }
 
@@ -25,16 +25,19 @@ namespace cp {
       uint32_t time = micros();
       float deltat = (time - _time) / 1.e6f;
       _time = time;
+      
       _quaternionFilter.update(accel[0], accel[1], accel[2], gyro[0], gyro[1], gyro[2], deltat);
       // get quaternion updated values back
       q[0] = _quaternionFilter.q1;
       q[1] = _quaternionFilter.q2;
       q[2] = _quaternionFilter.q3;
       q[3] = _quaternionFilter.q4;
+      
       float euler0 = atan2(2.0f*(q[0]*q[1]+q[2]*q[3]),q[0]*q[0]-q[1]*q[1]-q[2]*q[2]+q[3]*q[3]);
       float euler1 = asin(2.0f*(q[1]*q[3]-q[0]*q[2]));
-  
+      
       float compensatedAltitude = altitude * cos(euler0) * cos(euler1);
+      
       return ZHUpdate(compensatedAltitude);
   }
 
@@ -42,13 +45,13 @@ namespace cp {
   {
       isAtGround = false;
       // first update ZH array with latest estimation
-      ZH[ZHIdx] = compensatedAltitude;
+      _ZH[_ZHIdx] = compensatedAltitude;
       // and move index to next slot
-      uint8_t nextIndex = (ZHIdx + 1) % ZH_SIZE;
-      ZHIdx = nextIndex;
+      uint8_t nextIndex = (_ZHIdx + 1) % ZH_SIZE;
+      _ZHIdx = nextIndex;
       // Apply Zero-height update
       for (uint8_t k = 0; k < ZH_SIZE; ++k) {
-          if (fabs(ZH[k]) > heightThreshold) return compensatedAltitude;
+          if (fabs(_ZH[k]) > _heightThreshold) return compensatedAltitude;
       }
       isAtGround = true;
       return compensatedAltitude;
@@ -56,18 +59,18 @@ namespace cp {
 
   void Rangefinder::update(float accel[3], float gyro[3], float altitude)
   {
-      previousAlt = alt;
-      alt = Rangefinder::altitudeCompensation(accel, gyro, altitude);
+      _previousAlt = _alt;
+      _alt = Rangefinder::altitudeCompensation(accel, gyro, altitude);
   }
 
   float Rangefinder::getAltitude(void)
   {
-      return alt;
+      return _alt;
   }
 
   float Rangefinder::getDeltaAltitude(void)
   {
-      return alt - previousAlt;
+      return _alt - _previousAlt;
   }
 
 } // namespace cp
