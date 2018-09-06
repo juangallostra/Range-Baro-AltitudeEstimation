@@ -31,6 +31,12 @@ namespace cp {
     float baroDelta = baro.getDeltaAltitude();
     float rangeDelta = range.getDeltaAltitude();
     // Combine them with a complementary filter
+    if (range.isAtGround)
+    {
+      estimatedAltitude = 0;
+      return;
+    }
+    
     float alpha = exp(-fabs(baroDelta - rangeDelta)*gain);
     estimatedAltitude += alpha * rangeDelta;
     estimatedAltitude += (1 - alpha) * baroDelta; 

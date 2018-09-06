@@ -31,6 +31,7 @@ namespace cp {
 
   float Rangefinder::ZHUpdate(float compensatedAltitude)
   {
+      isAtGround = false;
       // first update ZH array with latest estimation
       ZH[ZHIdx] = compensatedAltitude;
       // and move index to next slot
@@ -40,7 +41,8 @@ namespace cp {
       for (uint8_t k = 0; k < ZH_SIZE; ++k) {
           if (fabs(ZH[k]) > heightThreshold) return compensatedAltitude;
       }
-      return 0.0;
+      isAtGround = true;
+      return compensatedAltitude;
   }
 
   void Rangefinder::update(float accel[3], float gyro[3], float altitude)

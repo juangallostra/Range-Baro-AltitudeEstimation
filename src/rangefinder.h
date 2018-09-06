@@ -23,6 +23,8 @@ namespace cp {
       
     public:
     
+      bool isAtGround;
+    
       void init(void);
     
       void update(float accel[3], float gyro[3], float altitude);
