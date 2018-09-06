@@ -42,9 +42,12 @@ static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
 
         if (imu.checkNewAccelGyroData()) {
             float ax, ay, az, gx, gy, gz;
-            imu.readAccelerometer(ay, ax, az);
-            imu.readGyrometer(gy, gx, gz);
-            gx = -gx;
+            imu.readAccelerometer(ax, ay, az);
+            imu.readGyrometer(gx, gy, gz);
+            // Negate to support board orientation
+            ax = -ax;
+            gy = -gy;
+            gz = -gz;
             // Copy gyro values back out in rad/sec
             gyro[0] = gx * M_PI / 180.0f;
             gyro[1] = gy * M_PI / 180.0f;
