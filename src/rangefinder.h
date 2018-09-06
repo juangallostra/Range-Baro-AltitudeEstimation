@@ -10,7 +10,6 @@ namespace cp {
   
       float alt = 0;
       float previousAlt = 0;
-      float eulerAngles[3];
       
       // Zero Height update
       static const uint8_t ZH_SIZE = 10;
