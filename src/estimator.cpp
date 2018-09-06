@@ -9,12 +9,12 @@ namespace cp {
 
   AltitudeEstimator::AltitudeEstimator(float gain)
   {
-    this->gain = gain;
+    _gain = gain;
   }
 
   void AltitudeEstimator::init(void)
   {
-      estimatedAltitude = 0;
+      _estimatedAltitude = 0;
       baro.init();
       range.init();
   }
@@ -24,7 +24,7 @@ namespace cp {
     // first update each sensor's estimation
     bool isCalibrating = baro.update(baroData);
     if (isCalibrating) {
-      estimatedAltitude = 0;
+      _estimatedAltitude = 0;
     }
     range.update(accel, gyro, rangeData);
     // obtain the altitude deltas
@@ -33,18 +33,18 @@ namespace cp {
     // Combine them with a complementary filter
     if (range.isAtGround)
     {
-      estimatedAltitude = 0;
+      _estimatedAltitude = 0;
       return;
     }
     
-    float alpha = exp(-fabs(baroDelta - rangeDelta)*gain);
-    estimatedAltitude += alpha * rangeDelta;
-    estimatedAltitude += (1 - alpha) * baroDelta; 
+    float alpha = exp(-fabs(baroDelta - rangeDelta)*_gain);
+    _estimatedAltitude += alpha * rangeDelta;
+    _estimatedAltitude += (1 - alpha) * baroDelta; 
   }
   
   float AltitudeEstimator::getAltitude(void)
   {
-     return estimatedAltitude;
+     return _estimatedAltitude;
   }
 
 } // namespace cp

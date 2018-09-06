@@ -15,9 +15,9 @@ namespace cp {
 
     private:
     
-      float estimatedAltitude;
+      float _estimatedAltitude;
       
-      float gain;
+      float _gain;
         
     public:
     
