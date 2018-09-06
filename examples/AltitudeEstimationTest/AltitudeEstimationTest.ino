@@ -63,7 +63,7 @@ static MS5637 barometer;
 static VL53L1X distanceSensor;
 
 // Altitude estimator
-static cp::AltitudeEstimator altitude;
+static cp::AltitudeEstimator altitude = cp::AltitudeEstimator(5.0);
 
 void setup(void)
 {

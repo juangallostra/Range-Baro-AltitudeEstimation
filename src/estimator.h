@@ -16,11 +16,15 @@ namespace cp {
     private:
     
       float estimatedAltitude;
+      
+      float gain;
         
     public:
     
       Barometer baro;
       Rangefinder range;
+    
+      AltitudeEstimator(float gain);
     
       void init(void);
       

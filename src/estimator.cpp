@@ -7,6 +7,11 @@
 
 namespace cp {
 
+  AltitudeEstimator::AltitudeEstimator(float gain)
+  {
+    this->gain = gain;
+  }
+
   void AltitudeEstimator::init(void)
   {
       estimatedAltitude = 0;
@@ -26,7 +31,7 @@ namespace cp {
     float baroDelta = baro.getDeltaAltitude();
     float rangeDelta = range.getDeltaAltitude();
     // Combine them
-    float alpha = exp(-fabs(baroDelta - rangeDelta));
+    float alpha = exp(-fabs(baroDelta - rangeDelta)*gain);
     estimatedAltitude += alpha * rangeDelta;
     estimatedAltitude += (1 - alpha) * baroDelta; 
   }
