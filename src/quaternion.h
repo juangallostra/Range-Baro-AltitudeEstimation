@@ -1,9 +1,9 @@
 /* 
-   filters.hpp: Filter classes and static methods
+   quaternion.h: Quaternion filter classes and methods
 
    Copyright (c) 2018 Simon D. Levy
 
-   This file is part of Hackflight.
+   This file is a partial copy of Hackflight's filters.hpp file.
 
    Hackflight is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
