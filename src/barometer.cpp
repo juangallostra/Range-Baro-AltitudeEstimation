@@ -41,7 +41,7 @@ namespace cp {
       _alt = 0;
       _previousAlt = 0;
 
-      for (uint8_t k=0; k<HISTORY_SIZE; ++k) {
+      for (uint8_t k = 0; k < HISTORY_SIZE; ++k) {
             _history[k] = 0;
       }
   }
@@ -52,7 +52,7 @@ namespace cp {
 
       _groundPressure -= _groundPressure / 8;
       _groundPressure += _pressureSum / (HISTORY_SIZE - 1);
-      _groundAltitude = millibarsToMeters(_groundPressure/8);
+      _groundAltitude = millibarsToMeters(_groundPressure / 8);
   }
 
   bool Barometer::update(float pressure)
@@ -75,8 +75,8 @@ namespace cp {
       }
       // update altitude estimation
       _previousAlt = _alt;
-      float alt_tmp = millibarsToMeters(_pressureSum/(HISTORY_SIZE-1)) - _groundAltitude;
-      _alt = _alt*NOISE_LPF + (1-NOISE_LPF)*alt_tmp;
+      float alt_tmp = millibarsToMeters(_pressureSum / (HISTORY_SIZE - 1)) - _groundAltitude;
+      _alt = _alt * NOISE_LPF + (1 - NOISE_LPF) * alt_tmp;
       return calibrating;
   }
 

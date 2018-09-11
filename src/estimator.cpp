@@ -52,7 +52,7 @@ namespace cp {
         return;
       }
     
-      float alpha = exp(-fabs(baroDelta - rangeDelta)*_gain);
+      float alpha = exp( - fabs(baroDelta - rangeDelta) * _gain);
       _estimatedAltitude += alpha * rangeDelta;
       _estimatedAltitude += (1 - alpha) * baroDelta; 
   }
