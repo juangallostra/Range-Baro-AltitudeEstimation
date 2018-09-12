@@ -47,6 +47,8 @@ namespace cp {
       
       void estimate(float quat[4], float rangeData, float baroData);
       
+      void estimate(float euler[3], float rangeData, float baroData);
+      
       float getAltitude(void);
 
   }; // class ComplementaryAltitude
