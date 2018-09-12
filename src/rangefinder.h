@@ -48,6 +48,8 @@ namespace cp {
   
       float altitudeCompensation(float accel[3], float gyro[3], float altitude);
       
+      float altitudeCompensation(float q[4], float altitude);
+      
       float ZHUpdate(float compensatedAltitude);
       
     public:
@@ -57,6 +59,8 @@ namespace cp {
       void init(void);
     
       void update(float accel[3], float gyro[3], float altitude);
+      
+      void update(float quat[4], float altitude);
     
       float getAltitude(void);
     
