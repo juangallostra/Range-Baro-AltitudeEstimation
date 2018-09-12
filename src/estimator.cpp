@@ -80,14 +80,14 @@ namespace cp {
       _estimatedAltitude += (1 - alpha) * baroDelta; 
   }
   
-  void AltitudeEstimator::estimate(float euler[3], float rangeData, float baroData)
+  void AltitudeEstimator::estimate(float rangeData, float baroData, float euler[3])
   {
       // first update each sensor's estimation
       bool isCalibrating = baro.update(baroData);
       if (isCalibrating) {
         _estimatedAltitude = 0;
       }
-      range.update(euler, rangeData);
+      range.update(rangeData, euler);
       // obtain the altitude deltas
       float baroDelta = baro.getDeltaAltitude();
       float rangeDelta = range.getDeltaAltitude();

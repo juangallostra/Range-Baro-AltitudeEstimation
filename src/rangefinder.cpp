@@ -69,6 +69,13 @@ namespace cp {
       
       return ZHUpdate(compensatedAltitude);
   }
+  
+  float Rangefinder::altitudeCompensation(float altitude, float euler[3])
+  {          
+      float compensatedAltitude = altitude * cos(euler[0]) * cos(euler[1]);
+      
+      return ZHUpdate(compensatedAltitude);
+  }
 
   float Rangefinder::ZHUpdate(float compensatedAltitude)
   {
@@ -96,6 +103,12 @@ namespace cp {
   {
       _previousAlt = _alt;
       _alt = Rangefinder::altitudeCompensation(quat, altitude);
+  }
+  
+  void Rangefinder::update(float altitude, float euler[3])
+  {
+      _previousAlt = _alt;
+      _alt = Rangefinder::altitudeCompensation(altitude, euler);
   }
 
   float Rangefinder::getAltitude(void)
