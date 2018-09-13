@@ -1,6 +1,31 @@
 /*
-   AltitudeEstimationTest.ino : Arduino sketch to perform altitude estimation using
-   the provided library
+    AltitudeEstimationTest.ino : Arduino sketch to perform altitude estimation using
+    the provided library
+   
+    Author: Juan Gallostra Acín
+
+    Additional libraries required (under your Arduino/libraries folder):
+ 
+      https://github.com/simondlevy/VL53L1X
+      https://github.com/BonaDrone/MS5637
+      https://github.com/simondlevy/MPU
+      https://github.com/simondlevy/CrossPlatformDataBus
+      
+
+    Copyright (c) 2018 Juan Gallostra
+
+    This file is part of the Arduino Range-Baro-AltitudeEstimation library.
+
+    The Arduino Range-Baro-AltitudeEstimation library is free software:
+    you can redistribute it and/or modify it under the terms of the GNU
+    General Public License as published by the Free Software Foundation,
+    either version 3 of the License, or (at your option) any later version.
+
+    The Arduino Range-Baro-AltitudeEstimation library is distributed in the
+    hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+    implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU General Public License for more details.
+    <http://www.gnu.org/licenses/>.
  */
 
 #include <Arduino.h>
