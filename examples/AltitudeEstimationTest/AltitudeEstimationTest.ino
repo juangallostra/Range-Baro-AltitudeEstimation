@@ -1,16 +1,16 @@
 /*
     AltitudeEstimationTest.ino : Arduino sketch to perform altitude estimation using
     the provided library
-   
+
     Author: Juan Gallostra Acín
 
     Additional libraries required (under your Arduino/libraries folder):
- 
+
       https://github.com/simondlevy/VL53L1X
-      https://github.com/BonaDrone/MS5637
+      https://github.com/simondlevy/MS5637
       https://github.com/simondlevy/MPU
       https://github.com/simondlevy/CrossPlatformDataBus
-      
+
 
     Copyright (c) 2018 Juan Gallostra
 
@@ -84,8 +84,9 @@ static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
     } // if gotNewData
 }
 
-// Barometer
-static MS5637 barometer;
+// Pressure and temperature oversample rate
+static MS5637::Rate_t OSR = MS5637::ADC_8192;
+static MS5637 barometer = MS5637(OSR);
 // RangeFinder
 static VL53L1X distanceSensor;
 
@@ -109,8 +110,8 @@ void setup(void)
         }
     }
     // initialize the estimator
-    altitude.init(); 
-    
+    altitude.init();
+
     // Begin serial comms
     Serial.begin(115200);
     // Set up the interrupt pin, it's set as active high, push-pull
@@ -121,8 +122,8 @@ void setup(void)
 
 void loop(void)
 {
-      float pressure;
-      barometer.getPressure(& pressure);
+      float pressure = 0, temperature = 0;
+      barometer.readData(temperature, pressure);
       float rangeHeight = (float)distanceSensor.getDistance() / 1000.0f;
       float accelData[3];
       float gyroData[3];
