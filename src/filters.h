@@ -83,7 +83,8 @@ namespace cp {
 
             MadgwickQuaternionFilter6DOF(float beta, float zeta);
 
-            // Adapted from https://github.com/kriswiner/MPU6050/blob/master/quaternionFilter.ino
+            // Adapted by Simon D. Levy from
+            // https://github.com/kriswiner/MPU6050/blob/master/quaternionFilter.ino
             void update(float ax, float ay, float az, float gx, float gy, float gz, float deltat);
 
     }; // class MadgwickQuaternionFilter6DOF
