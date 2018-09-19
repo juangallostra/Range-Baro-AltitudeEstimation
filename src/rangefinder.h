@@ -18,7 +18,7 @@
    <http://www.gnu.org/licenses/>.
  */
  
-#include "quaternion.h"
+#include "filters.h"
 #include <Arduino.h>
 
 namespace cp {

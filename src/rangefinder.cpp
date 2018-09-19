@@ -19,8 +19,9 @@
  */
  
 #include <cmath>
+#include <Arduino.h>
 
-#include "quaternion.h"
+#include "filters.h"
 #include "rangefinder.h"
 
 namespace cp {
