@@ -34,16 +34,13 @@ namespace cp {
   void Barometer::init(void)
   {
       _iters = 0;
-    
-      _pressureSum = 0;
-      _historyIdx = 0;
+
+      _lpf.init();
+
+      _pressure = 0;
       _groundAltitude = 0;
       _alt = 0;
       _previousAlt = 0;
-
-      for (uint8_t k = 0; k < HISTORY_SIZE; ++k) {
-            _history[k] = 0;
-      }
   }
 
   void Barometer::calibrate(void)
@@ -51,19 +48,14 @@ namespace cp {
       static float _groundPressure;
 
       _groundPressure -= _groundPressure / 8;
-      _groundPressure += _pressureSum / (HISTORY_SIZE - 1);
+      _groundPressure += _pressure;
       _groundAltitude = millibarsToMeters(_groundPressure / 8);
   }
 
   bool Barometer::update(float pressure)
   {
       bool calibrating = true;
-      // update pressure history
-      uint8_t indexplus1 = (_historyIdx + 1) % HISTORY_SIZE;
-      _history[_historyIdx] = pressure;
-      _pressureSum += _history[_historyIdx];
-      _pressureSum -= _history[indexplus1];
-      _historyIdx = indexplus1;
+      _pressure = _lpf.update(pressure);
       // if required, calibrate baro
       if (_iters < _calibrationIters)
       {
@@ -75,7 +67,7 @@ namespace cp {
       }
       // update altitude estimation
       _previousAlt = _alt;
-      float alt_tmp = millibarsToMeters(_pressureSum / (HISTORY_SIZE - 1)) - _groundAltitude;
+      float alt_tmp = millibarsToMeters(_pressure) - _groundAltitude;
       _alt = _alt * NOISE_LPF + (1 - NOISE_LPF) * alt_tmp;
       return calibrating;
   }

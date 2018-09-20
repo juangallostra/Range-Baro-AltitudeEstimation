@@ -19,6 +19,7 @@
  */
 
 #include <Arduino.h>
+#include "filters.h"
 
 namespace cp {
 
@@ -30,15 +31,15 @@ namespace cp {
           uint8_t _calibrationIters             = 100;
 
           const float NOISE_LPF                 = 0.5f;
-          static const uint8_t HISTORY_SIZE     = 10;
 
           float   _alt;
-        
-          float   _history[HISTORY_SIZE];
-          uint8_t _historyIdx;
+
           float   _groundAltitude;
           float   _previousAlt;
-          float   _pressureSum;
+          float   _pressure;
+          
+          // Use a history of 10 readings for the low pass filter
+          cp::LowPassFilter _lpf = cp::LowPassFilter(10);
 
           // Pressure in millibars to altitude in meters
           float millibarsToMeters(float mbar);
