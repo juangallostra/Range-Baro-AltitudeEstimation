@@ -26,7 +26,7 @@
     implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the GNU General Public License for more details.
     <http://www.gnu.org/licenses/>.
- */
+*/
 
 #include <Arduino.h>
 #include <Wire.h>
