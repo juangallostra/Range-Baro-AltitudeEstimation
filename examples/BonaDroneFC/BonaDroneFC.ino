@@ -1,6 +1,6 @@
 /*
-    AltitudeEstimationTest.ino : Arduino sketch to perform altitude estimation using
-    BonaDrone's FC sensors and the VL53L1X Rangefinder
+    BonaDroneFC.ino : Arduino sketch to perform altitude estimation using
+    BonaDrone's FC sensors and VL53L1X Rangefinder
 
     Author: Juan Gallostra Acín
 
@@ -36,10 +36,12 @@
 #include <LPS22HB.h>
 // Rangefinder
 #include <VL53L1X.h>
-
+// altitude estimator
 #include "estimator.h"
 
-// helper variables and functions for obtaining IMU data
+
+// --- IMU related variables and functions ---
+
 // LSM6DSM full-scale settings
 static const LSM6DSM::Ascale_t Ascale = LSM6DSM::AFS_2G;
 static const LSM6DSM::Gscale_t Gscale = LSM6DSM::GFS_245DPS;
@@ -52,6 +54,7 @@ float GYRO_BIAS[3]  = {0.71, -2.69, 0.78};
 
 // LSM6DSM data-ready interrupt pin
 const uint8_t LSM6DSM_INTERRUPT_PIN = 2;
+
 // flag for when new data is received
 static bool gotNewAccelGyroData;
 static void lsm6dsmInterruptHandler()
@@ -60,7 +63,6 @@ static void lsm6dsmInterruptHandler()
 }
 
 LSM6DSM lsm6dsm = LSM6DSM(Ascale, Gscale, AODR, GODR, ACCEL_BIAS, GYRO_BIAS);
-
 
 static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
 {
@@ -87,14 +89,24 @@ static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
     } // if gotNewData
 }
 
+
+// --- Barometer related variables and functions ---
+
 // Pressure and temperature oversample rate
 static LPS22HB::Rate_t ODR = LPS22HB::P_25Hz;     
 static LPS22HB lps22hb = LPS22HB(ODR);
+
+
+// --- Rangefinder related variables and functions 
+
 // RangeFinder
 static VL53L1X distanceSensor;
 
 // Altitude estimator
 static cp::AltitudeEstimator altitude = cp::AltitudeEstimator(5.0);
+
+
+// -- Sensor and communication protocols initialization ---  
 
 void setup(void)
 {
@@ -124,14 +136,20 @@ void setup(void)
     lsm6dsm.clearInterrupt();
 }
 
+
+// --- Main loop to be executed ---
+
 void loop(void)
 {
+      // read sensors
       float pressure = lps22hb.readPressure();
       float rangeHeight = (float)distanceSensor.getDistance() / 1000.0f;
       float accelData[3];
       float gyroData[3];
       getGyrometerAndAccelerometer(gyroData, accelData);
+      // update estimation
       altitude.estimate(accelData, gyroData, rangeHeight, pressure);
+      // Send results through serial
       Serial.print(altitude.range.getAltitude());
       Serial.print(",");
       Serial.print(altitude.baro.getAltitude());
