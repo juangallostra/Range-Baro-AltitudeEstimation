@@ -30,7 +30,8 @@ namespace cp {
   {
       _alt = 0;
       _previousAlt = 0;
-      // Apply Zero-height update
+      _lpf.init();
+      // Initialize Zero-height update
       for (uint8_t k = 0; k < ZH_SIZE; ++k) {
           _ZH[k] = 0;
       }
@@ -97,19 +98,19 @@ namespace cp {
   void Rangefinder::update(float accel[3], float gyro[3], float altitude)
   {
       _previousAlt = _alt;
-      _alt = Rangefinder::altitudeCompensation(accel, gyro, altitude);
+      _alt = _lpf.update(Rangefinder::altitudeCompensation(accel, gyro, altitude));
   }
   
   void Rangefinder::update(float quat[4], float altitude)
   {
       _previousAlt = _alt;
-      _alt = Rangefinder::altitudeCompensation(quat, altitude);
+      _alt = _lpf.update(Rangefinder::altitudeCompensation(quat, altitude));
   }
   
   void Rangefinder::update(float altitude, float euler[3])
   {
       _previousAlt = _alt;
-      _alt = Rangefinder::altitudeCompensation(altitude, euler);
+      _alt = _lpf.update(Rangefinder::altitudeCompensation(altitude, euler));
   }
 
   float Rangefinder::getAltitude(void)

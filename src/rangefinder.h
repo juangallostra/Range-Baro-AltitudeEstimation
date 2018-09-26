@@ -30,6 +30,9 @@ namespace cp {
       float _alt = 0;
       float _previousAlt = 0;
       
+      // Use a history of 10 readings for the low pass filter
+      cp::LowPassFilter _lpf = cp::LowPassFilter(10);
+      
       // Zero Height update
       static const uint8_t ZH_SIZE = 10;
       float _ZH[ZH_SIZE];
