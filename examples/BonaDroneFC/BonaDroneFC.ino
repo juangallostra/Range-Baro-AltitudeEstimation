@@ -41,7 +41,6 @@
 
 
 // --- IMU related variables and functions ---
-
 // LSM6DSM full-scale settings
 static const LSM6DSM::Ascale_t Ascale = LSM6DSM::AFS_2G;
 static const LSM6DSM::Gscale_t Gscale = LSM6DSM::GFS_245DPS;
@@ -89,25 +88,19 @@ static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
     } // if gotNewData
 }
 
-
 // --- Barometer related variables and functions ---
-
 // Pressure and temperature oversample rate
 static LPS22HB::Rate_t ODR = LPS22HB::P_25Hz;     
 static LPS22HB lps22hb = LPS22HB(ODR);
 
-
-// --- Rangefinder related variables and functions 
-
-// RangeFinder
+// --- Rangefinder related variables and functions ---
 static VL53L1X distanceSensor;
 
-// Altitude estimator
-static cp::AltitudeEstimator altitude = cp::AltitudeEstimator(5.0);
+// --- Altitude estimator ---
+static cp::AltitudeEstimator altitude = cp::AltitudeEstimator(20.0);
 
-
+unsigned long pastTime;
 // -- Sensor and communication protocols initialization ---  
-
 void setup(void)
 {
     // Start I^2C
@@ -134,13 +127,16 @@ void setup(void)
     attachInterrupt(LSM6DSM_INTERRUPT_PIN, lsm6dsmInterruptHandler, RISING);  
     // Clear the interrupt
     lsm6dsm.clearInterrupt();
+    // initialize plotting timer
+    pastTime = millis();
 }
 
-
 // --- Main loop to be executed ---
-
 void loop(void)
 {
+      unsigned long currentTime = millis();
+      if ((currentTime - pastTime) > 50)
+      {
       // read sensors
       float pressure = lps22hb.readPressure();
       float rangeHeight = (float)distanceSensor.getDistance() / 1000.0f;
@@ -150,9 +146,12 @@ void loop(void)
       // update estimation
       altitude.estimate(accelData, gyroData, rangeHeight, pressure);
       // Send results through serial
-      Serial.print(altitude.range.getAltitude());
-      Serial.print(",");
-      Serial.print(altitude.baro.getAltitude());
-      Serial.print(",");
-      Serial.println(altitude.getAltitude());
+    
+        Serial.print(altitude.range.getAltitude());
+        Serial.print(",");
+        Serial.print(altitude.baro.getAltitude());
+        Serial.print(",");
+        Serial.println(altitude.getAltitude());
+        pastTime = currentTime;
+      }
 }

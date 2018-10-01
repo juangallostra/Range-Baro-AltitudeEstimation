@@ -38,8 +38,8 @@ namespace cp {
           float   _previousAlt;
           float   _pressure;
           
-          // Use a history of 10 readings for the low pass filter
-          cp::LowPassFilter _lpf = cp::LowPassFilter(10);
+          // Use a history of 15 readings for the low pass filter
+          cp::LowPassFilter _lpf = cp::LowPassFilter(15);
 
           // Pressure in millibars to altitude in meters
           float millibarsToMeters(float mbar);
