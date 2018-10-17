@@ -90,7 +90,7 @@ static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
 
 // --- Barometer related variables and functions ---
 // Pressure and temperature oversample rate
-static LPS22HB::Rate_t ODR = LPS22HB::P_25Hz;     
+static LPS22HB::Rate_t ODR = LPS22HB::P_75Hz;     
 static LPS22HB lps22hb = LPS22HB(ODR);
 
 // --- Rangefinder related variables and functions ---
