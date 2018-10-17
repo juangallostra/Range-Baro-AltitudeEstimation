@@ -25,10 +25,10 @@ namespace cp {
 
   // Pressure in millibars to altitude in meters. We assume
   // millibars are the units of the pressure readings from the sensor
-  float Barometer::millibarsToMeters(float mbar)
+  float Barometer::decibarsToMeters(float dbar)
   {
       // see: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
-      return (1.0f - powf(mbar / 1013.25f, 0.190295f)) * 44330.0f;
+      return (1.0f - powf(dbar / 101325.00f, 0.190295f)) * 44330.0f;
   }
 
   void Barometer::init(void)
@@ -43,32 +43,34 @@ namespace cp {
       _previousAlt = 0;
   }
 
-  void Barometer::calibrate(void)
+  void Barometer::calibrate(int pressure)
   {
       static float _groundPressure;
-
-      _groundPressure -= _groundPressure / 8;
-      _groundPressure += _pressure;
-      _groundAltitude = millibarsToMeters(_groundPressure / 8);
+      _groundPressure += (int)((float)pressure / _calibrationIters);
+      _groundAltitude = decibarsToMeters(_groundPressure);
   }
 
   bool Barometer::update(float pressure)
   {
       bool calibrating = true;
+      // Round pressure to 2 decimal places and
+      // work with it as an int. We assume the rest
+      // is noise
+      pressure  = (int)(pressure * 100); 
       _pressure = _lpf.update(pressure);
       // if required, calibrate baro
       if (_iters < _calibrationIters)
       {
-        Barometer::calibrate();
+        Barometer::calibrate(pressure);
         _iters += 1;
       }
       else {
         calibrating = false;
+        // update altitude estimation
+        _previousAlt = _alt;
+        float alt_tmp = decibarsToMeters(_pressure) - _groundAltitude;
+        _alt = _alt * NOISE_LPF + (1 - NOISE_LPF) * alt_tmp;
       }
-      // update altitude estimation
-      _previousAlt = _alt;
-      float alt_tmp = millibarsToMeters(_pressure) - _groundAltitude;
-      _alt = _alt * NOISE_LPF + (1 - NOISE_LPF) * alt_tmp;
       return calibrating;
   }
 

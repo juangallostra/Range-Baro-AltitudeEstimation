@@ -39,16 +39,16 @@ namespace cp {
           float   _pressure;
           
           // Use a history of 15 readings for the low pass filter
-          cp::LowPassFilter _lpf = cp::LowPassFilter(15);
+          cp::LowPassFilterInt _lpf = cp::LowPassFilterInt(15);
 
           // Pressure in millibars to altitude in meters
-          float millibarsToMeters(float mbar);
+          float decibarsToMeters(float dbar);
 
         public:
 
           void init(void);
 
-          void calibrate(void);
+          void calibrate(int pressure);
 
           bool update(float pressure);
 
