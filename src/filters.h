@@ -45,6 +45,25 @@ namespace cp {
 
     }; // class LowPassFilter
 
+    class LowPassFilterInt {
+
+        private:
+
+            int _history[256];
+            uint8_t _historySize;
+            uint8_t _historyIdx;
+            int _sum;
+
+        public:
+
+            LowPassFilterInt(uint16_t historySize);
+
+            void init(void);
+
+            int update(int value);
+
+    }; // class LowPassFilter
+
 
     class QuaternionFilter {
 

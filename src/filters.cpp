@@ -46,7 +46,31 @@ namespace cp {
       _sum += _history[_historyIdx];
       _sum -= _history[indexplus1];
       _historyIdx = indexplus1;
-      return _sum / _historySize;
+      return _sum / (_historySize - 1);
+  }
+  
+  LowPassFilterInt::LowPassFilterInt(uint16_t historySize)
+  {
+      _historySize = historySize;
+  }
+
+  void LowPassFilterInt::init(void)
+  {
+      for (uint8_t k=0; k<_historySize; ++k) {
+          _history[k] = 0;
+      }
+      _historyIdx = 0;
+      _sum = 0;
+  }
+
+  int LowPassFilterInt::update(int value)
+  {
+      uint8_t indexplus1 = (_historyIdx + 1) % _historySize;
+      _history[_historyIdx] = value;
+      _sum += _history[_historyIdx];
+      _sum -= _history[indexplus1];
+      _historyIdx = indexplus1;
+      return (int)((float)_sum / (_historySize - 1));
   }
 
   QuaternionFilter::QuaternionFilter(void)
