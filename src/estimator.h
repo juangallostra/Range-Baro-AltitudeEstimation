@@ -33,6 +33,8 @@ namespace cp {
       float _estimatedAltitude;
       
       float _gain;
+      
+      void estimateAltitude(bool isCalibrating);
         
     public:
     
