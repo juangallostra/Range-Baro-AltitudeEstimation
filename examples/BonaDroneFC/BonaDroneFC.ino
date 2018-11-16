@@ -43,49 +43,38 @@
 // --- IMU related variables and functions ---
 // LSM6DSM full-scale settings
 static const LSM6DSM::Ascale_t Ascale = LSM6DSM::AFS_2G;
-static const LSM6DSM::Gscale_t Gscale = LSM6DSM::GFS_245DPS;
-static const LSM6DSM::Rate_t   AODR   = LSM6DSM::ODR_833Hz;
-static const LSM6DSM::Rate_t   GODR   = LSM6DSM::ODR_833Hz;
+static const LSM6DSM::Gscale_t Gscale = LSM6DSM::GFS_2000DPS;
+static const LSM6DSM::Rate_t   AODR   = LSM6DSM::ODR_1660Hz;
+static const LSM6DSM::Rate_t   GODR   = LSM6DSM::ODR_1660Hz;
 
 // Biases computed by Kris
-float ACCEL_BIAS[3] = {-0.01308, -0.00493, 0.03083};
-float GYRO_BIAS[3]  = {0.71, -2.69, 0.78};
+float ACCEL_BIAS[3] = {0.0, 0.0, 0.0};
+float GYRO_BIAS[3]  = {0.0, 0.0, 0.0};
 
-// LSM6DSM data-ready interrupt pin
-const uint8_t LSM6DSM_INTERRUPT_PIN = 2;
-
-// flag for when new data is received
-static bool gotNewAccelGyroData;
-static void lsm6dsmInterruptHandler()
-{
-    gotNewAccelGyroData = true;
-}
 
 LSM6DSM lsm6dsm = LSM6DSM(Ascale, Gscale, AODR, GODR, ACCEL_BIAS, GYRO_BIAS);
 
-static void getGyrometerAndAccelerometer(float gyro[3], float accel[3])
+static void imuRead(float gyro[3], float accel[3])
 {
-      if (gotNewAccelGyroData) {
+    if (lsm6dsm.checkNewData()) {
+        float _ax, _ay, _az, _gx, _gy, _gz;
+        lsm6dsm.readData(_ax, _ay, _az, _gx, _gy, _gz);
 
-            gotNewAccelGyroData = false;
-            float _ax, _ay, _az, _gx, _gy, _gz;
-            lsm6dsm.readData(_ax, _ay, _az, _gx, _gy, _gz);
+        // Negate to support board orientation
+        _ax = -_ax;
+        _gy = -_gy;
+        _gz = -_gz;
 
-            // Negate to support board orientation
-            _ax = -_ax;
-            _gy = -_gy;
-            _gz = -_gz;
+        // Copy gyro values back out in rad/sec
+        gyro[0] = _gx * M_PI / 180.0f;
+        gyro[1] = _gy * M_PI / 180.0f;
+        gyro[2] = _gz * M_PI / 180.0f;
+        // and acceleration values
+        accel[0] = _ax;
+        accel[1] = _ay;
+        accel[2] = _az;
 
-            // Copy gyro values back out in rad/sec
-            gyro[0] = _gx * M_PI / 180.0f;
-            gyro[1] = _gy * M_PI / 180.0f;
-            gyro[2] = _gz * M_PI / 180.0f;
-            // and acceleration values
-            accel[0] = _ax;
-            accel[1] = _ay;
-            accel[2] = _az;
-
-    } // if gotNewData
+    } 
 }
 
 // --- Barometer related variables and functions ---
@@ -110,6 +99,7 @@ void setup(void)
 
     // initialize sensors
     lsm6dsm.begin();
+    lsm6dsm.calibrate(GYRO_BIAS, ACCEL_BIAS);
     lps22hb.begin();
     if (distanceSensor.begin() == false) {
         while (true) {
@@ -122,12 +112,7 @@ void setup(void)
 
     // Begin serial comms
     Serial.begin(115200);
-    // Configure interrupt
-    pinMode(LSM6DSM_INTERRUPT_PIN, INPUT);
-    attachInterrupt(LSM6DSM_INTERRUPT_PIN, lsm6dsmInterruptHandler, RISING);  
-    // Clear the interrupt
-    lsm6dsm.clearInterrupt();
-    // initialize plotting timer
+    // initialize timer
     pastTime = millis();
 }
 
@@ -137,21 +122,22 @@ void loop(void)
       unsigned long currentTime = millis();
       if ((currentTime - pastTime) > 50)
       {
-      // read sensors
-      float pressure = lps22hb.readPressure();
-      float rangeHeight = (float)distanceSensor.getDistance() / 1000.0f;
-      float accelData[3];
-      float gyroData[3];
-      getGyrometerAndAccelerometer(gyroData, accelData);
-      // update estimation
-      altitude.estimate(accelData, gyroData, rangeHeight, pressure);
-      // Send results through serial
-    
-        Serial.print(altitude.range.getAltitude());
-        Serial.print(",");
-        Serial.print(altitude.baro.getAltitude());
-        Serial.print(",");
-        Serial.println(altitude.getAltitude());
-        pastTime = currentTime;
+          // read sensors
+          float pressure = lps22hb.readPressure();
+          float rangeHeight = (float)distanceSensor.getDistance() / 1000.0f;
+          float accelData[3];
+          float gyroData[3];
+          imuRead(gyroData, accelData);
+          // update estimation
+          altitude.estimate(accelData, gyroData, rangeHeight, pressure);
+
+          // Send results through serial
+          Serial.print(altitude.range.getAltitude());
+          Serial.print(",");
+          Serial.print(altitude.baro.getAltitude());
+          Serial.print(",");
+          Serial.println(altitude.getAltitude());
+        
+          pastTime = currentTime;
       }
 }
