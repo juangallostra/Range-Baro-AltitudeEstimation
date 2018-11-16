@@ -39,7 +39,7 @@
 // altitude estimator
 #include "estimator.h"
 
-
+uint8_t LED_PIN = 38;
 // --- IMU related variables and functions ---
 // LSM6DSM full-scale settings
 static const LSM6DSM::Ascale_t Ascale = LSM6DSM::AFS_2G;
@@ -92,6 +92,8 @@ unsigned long pastTime;
 // -- Sensor and communication protocols initialization ---  
 void setup(void)
 {
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, LOW);
     // Start I^2C
     Wire.begin(TWI_PINS_20_21);
     Wire.setClock(400000); // I2C frequency at 400 kHz
@@ -114,6 +116,7 @@ void setup(void)
     Serial.begin(115200);
     // initialize timer
     pastTime = millis();
+    digitalWrite(LED_PIN, HIGH);
 }
 
 // --- Main loop to be executed ---
